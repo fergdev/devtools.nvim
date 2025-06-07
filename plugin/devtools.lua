@@ -4,7 +4,7 @@ if vim.g.loaded_devtools then
 end
 vim.g.loaded_devtools = true
 
-vim.keymap.set("n", "<leader>dj", function()
+vim.keymap.set("n", "<leader>tdj", function()
 	local line = vim.api.nvim_get_current_line()
 	local jwt = require("devtools.core.jwt")
 	local result, err = jwt.decode(line)
@@ -15,7 +15,7 @@ vim.keymap.set("n", "<leader>dj", function()
 	vim.notify("Payload:\n" .. vim.inspect(result.payload))
 end, { desc = "Decode JWT on line" })
 
-vim.keymap.set("n", "<leader>db", function()
+vim.keymap.set("n", "<leader>tdb", function()
 	local line = vim.api.nvim_get_current_line()
 	local base64 = require("devtools.core.base64")
 	local result = base64.base64_decode(line)
@@ -25,7 +25,7 @@ vim.keymap.set("n", "<leader>db", function()
 	vim.notify("Base64 decoded :\n" .. result)
 end, { desc = "Decode base64 on line" })
 
-vim.keymap.set("n", "<leader>eb", function()
+vim.keymap.set("n", "<leader>teb", function()
 	local line = vim.api.nvim_get_current_line()
 	local base64 = require("devtools.core.base64")
 	local result = base64.base64_encode(line)
@@ -35,7 +35,7 @@ vim.keymap.set("n", "<leader>eb", function()
 	vim.notify("Base64 encode :\n" .. result)
 end, { desc = "Encode base64 on line" })
 
-vim.keymap.set("v", "<leader>dt", function()
+vim.keymap.set("v", "<leader>tdt", function()
 	local start_pos = vim.fn.getpos("'<")
 	local end_pos = vim.fn.getpos("'>")
 	local lines = vim.api.nvim_buf_get_lines(0, start_pos[2] - 1, end_pos[2], false)
