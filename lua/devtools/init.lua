@@ -1,17 +1,6 @@
--- local M = {}
---
--- M.decode_jwt = require("devtools.core.jwt").decode
--- M.decode_timestamp = require("devtools.core.timestamp").decode
--- M.base64 = require("devtools.core.base64").decode
-
--- Check if devtools is already loaded
--- if vim.g.loaded_devtools then
--- 	return
--- end
--- vim.g.loaded_devtools = true
-
 local M = {}
 
+-- TODO: add register support
 local config = { output = "notify" }
 function M.setup(user_opts)
 	vim.notify("Setting up devtools with user options: " .. vim.inspect(user_opts), vim.log.levels.INFO)
@@ -22,6 +11,7 @@ local selection = function()
 	if vim.fn.mode() == "v" then
 		return table.concat(vim.fn.getregion(vim.fn.getpos("v"), vim.fn.getpos(".")), "\n")
 	else
+		-- TODO: select till non base64 encoded character, well for jwt
 		local a = vim.fn.expand("<cWORD>")
 		vim.notify("Selected word: " .. a)
 		return a
@@ -45,8 +35,7 @@ local display = function(result)
 	elseif config.output == "replace" then
 		replace("Header:\n" .. vim.inspect(result.header) .. "\n\nPayload:\n" .. vim.inspect(result.payload))
 	elseif config.output == "buffer" then
-		local json = vim.fn.json_encode(result)
-		local lines = vim.split(json, "\n")
+		local lines = type(result) == "string" and vim.split(result, "\n") or result
 		local buf = vim.api.nvim_create_buf(false, true) -- [listed = false], [scratch = true]
 		vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
 		vim.cmd("vsplit") -- or use `split`, `tabnew`, etc.
@@ -54,6 +43,8 @@ local display = function(result)
 		vim.bo.filetype = "json" -- or plaintext, log, etc.
 		vim.bo.bufhidden = "wipe"
 		vim.bo.modifiable = true
+	elseif config.output == "register" then
+		vim.fn.setreg('"', result)
 	end
 end
 
@@ -66,7 +57,9 @@ vim.keymap.set({ "v", "n" }, "<leader>tdj", function()
 		return vim.notify("Error decoding jwt " .. err, vim.log.levels.ERROR)
 	end
 
-	display(result)
+	local json = vim.fn.json_encode(result)
+	local lines = vim.split(json, "\n")
+	display(lines)
 end, { desc = "Decode JWT selection" })
 
 vim.keymap.set("n", "<leader>tdb", function()
@@ -76,10 +69,10 @@ vim.keymap.set("n", "<leader>tdb", function()
 	if not result then
 		return vim.notify("Could not decode " .. line, vim.log.levels.ERROR)
 	end
-	vim.notify("Base64 decoded :\n" .. result)
+	display(result)
 end, { desc = "Decode base64 on line" })
 
-vim.keymap.set("v", "<leader>teb", function()
+vim.keymap.set({ "v", "n" }, "<leader>teb", function()
 	local txt = selection()
 	local base64 = require("devtools.core.base64")
 	local result = base64.base64_encode(txt)
@@ -90,7 +83,7 @@ vim.keymap.set("v", "<leader>teb", function()
 	display(result)
 end, { desc = "Encode base64 on line" })
 
-vim.keymap.set("n", "<leader>teb", function()
+vim.keymap.set({ "n", "v" }, "<leader>teb", function()
 	local line = vim.api.nvim_get_current_line()
 	local base64 = require("devtools.core.base64")
 	local result = base64.base64_encode(line)
@@ -100,17 +93,7 @@ vim.keymap.set("n", "<leader>teb", function()
 	display(result)
 end, { desc = "Encode base64 on line" })
 
-vim.keymap.set("v", "<leader>teb", function()
-	local line = selection()
-	local base64 = require("devtools.core.base64")
-	local result = base64.base64_encode(line)
-	if not result then
-		return vim.notify("Could not encode " .. line, vim.log.levels.ERROR)
-	end
-	display(result)
-end, { desc = "Encode base64 on line" })
-
-vim.keymap.set("n", "<leader>tdt", function()
+vim.keymap.set({ "n", "v" }, "<leader>tdt", function()
 	local txt = vim.api.nvim_get_current_line()
 	local ts = require("devtools.core.timestamp")
 	local result, err = ts.decode(txt)
@@ -120,14 +103,34 @@ vim.keymap.set("n", "<leader>tdt", function()
 	display(result)
 end, { desc = "Decode UNIX timestamp from line" })
 
-vim.keymap.set("v", "<leader>tdt", function()
+vim.keymap.set({ "v", "n" }, "<leader>tdn", function()
 	local txt = selection()
 	local ts = require("devtools.core.timestamp")
+	local result, err = ts.decode_nanos(txt)
+	if not result then
+		return vim.notify(err or "Decode error", vim.log.levels.ERROR)
+	end
+	display(result)
+end, { desc = "Decode UNIX timestamp nanos from selection" })
+
+vim.keymap.set({ "v", "n" }, "<leader>teh", function()
+	local txt = selection()
+	local ts = require("devtools.core.hex")
+	local result, err = ts.encode(txt)
+	if not result then
+		return vim.notify(err or "Encode error", vim.log.levels.ERROR)
+	end
+	display(result)
+end, { desc = "Encode hex" })
+
+vim.keymap.set({ "v", "n" }, "<leader>tdh", function()
+	local txt = selection()
+	local ts = require("devtools.core.hex")
 	local result, err = ts.decode(txt)
 	if not result then
 		return vim.notify(err or "Decode error", vim.log.levels.ERROR)
 	end
 	display(result)
-end, { desc = "Decode UNIX timestamp from selection" })
+end, { desc = "Decode hex" })
 
 return M

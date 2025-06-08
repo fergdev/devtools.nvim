@@ -1,0 +1,17 @@
+
+jwt
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30
+
+txt
+encodeme
+encodeme
+
+millis
+1749352500
+
+nanos
+1728083203456789012
+
+hex
+68656c6c6f
+hello
