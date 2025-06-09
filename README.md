@@ -4,9 +4,9 @@ I hope you find these scripts useful! Feel free to use them as you like.
 
 ## TO-DO
 
-### Keymaps
+### Key-maps
 
-Allow proper support for Keymaps
+Allow proper support for Key-maps
 
 ### Encodings
 
@@ -16,12 +16,11 @@ Allow proper support for Keymaps
 
 ### Checksums
 
-- [ ]  md5
+- [x]  md5
 - [ ]  SHA1/2
 - [ ]  CRC32
-[ ]
 
-### Binary/Ineger
+### Binary/Integer
 
 - [ ] binary - ascii
 - [ ] octal
@@ -37,3 +36,10 @@ Allow proper support for Keymaps
 ### Date time
 
 - [ ] different formats
+[ ]
+
+### Shout outs
+
+kikito for the md5 code
+
+[Kikito md5 code](https://github.com/kikito/md5.lua)

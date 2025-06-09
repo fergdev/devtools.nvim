@@ -133,4 +133,21 @@ vim.keymap.set({ "v", "n" }, "<leader>tdh", function()
 	display(result)
 end, { desc = "Decode hex" })
 
+vim.keymap.set({ "v", "n" }, "<leader>tdm", function()
+	local txt = selection()
+	local ts = require("devtools.core.md5")
+	local result, err = ts.decode(txt)
+	if not result then
+		return vim.notify(err or "Decode error", vim.log.levels.ERROR)
+	end
+	display(result)
+end, { desc = "Decode md5" })
+
+vim.keymap.set({ "v", "n" }, "<leader>tem", function()
+	local txt = selection()
+	local ts = require("devtools.core.md5")
+	local result = ts.sumhexa(txt)
+	display(result)
+end, { desc = "Encode md5" })
+
 return M
