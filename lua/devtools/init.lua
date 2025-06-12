@@ -3,7 +3,6 @@ local M = {}
 -- TODO: add register support
 local config = { output = "notify" }
 function M.setup(user_opts)
-	vim.notify("Setting up devtools with user options: " .. vim.inspect(user_opts), vim.log.levels.INFO)
 	config = vim.tbl_deep_extend("force", config, user_opts or config)
 end
 
